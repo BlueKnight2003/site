@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Counter with Storage</title>
+  <title>Counter with Firebase</title>
   <style>
     body {
       background-color: black;
@@ -61,52 +61,86 @@
     </div>
   </div>
 
-  <script>
-    // Завантажуємо значення з LocalStorage, або встановлюємо 0, якщо значення немає
-    let veronichkaCounter = parseInt(localStorage.getItem("veronichkaCounter")) || 0;
-    let nazaoCounter = parseInt(localStorage.getItem("nazaoCounter")) || 0;
+  <!-- Firebase SDK (type="module" для використання імпортів) -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.1.2/firebase-app.js';
+    import { getDatabase, ref, set, get } from 'https://www.gstatic.com/firebasejs/9.1.2/firebase-database.js';
 
-    // Оновлюємо відображення лічильника
+    // Firebase configuration (замініть на свої дані)
+    const firebaseConfig = {
+      apiKey: "AIzaSyCP9SVwIZi73ORoJX2zib2h3daLMlIVr7k",
+      authDomain: "site-851f0.firebaseapp.com",
+      databaseURL: "https://site-851f0-default-rtdb.firebaseio.com",
+      projectId: "site-851f0",
+      storageBucket: "site-851f0.firebasestorage.app",
+      messagingSenderId: "G-JTDL19PX1D",
+      appId: "1:912006324695:web:b51940753daffc056e2b92"
+    };
+
+    // Ініціалізація Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+    // Функція для оновлення значення лічильника
     function updateCounter(counterId, value) {
       document.getElementById(counterId).textContent = value;
     }
 
-    // Зберігаємо значення в LocalStorage
-    function saveToLocalStorage(name, value) {
-      localStorage.setItem(name, value);
+    // Функція для збереження значення в Firebase
+    function saveToFirebase(name, value) {
+      set(ref(database, 'counters/' + name), {
+        value: value
+      });
     }
 
-    // Обробник подій для кнопки +2 для Veronichka
+    // Завантажуємо значення лічильника з Firebase
+    function loadCounterFromFirebase(name, callback) {
+      const counterRef = ref(database, 'counters/' + name);
+      get(counterRef).then((snapshot) => {
+        const data = snapshot.val();
+        callback(data ? data.value : 0);
+      });
+    }
+
+    // Початкові значення лічильників
+    let veronichkaCounter = 0;
+    let nazaoCounter = 0;
+
+    // Завантаження значень з Firebase при завантаженні сторінки
+    loadCounterFromFirebase("veronichka", function(value) {
+      veronichkaCounter = value;
+      updateCounter("counter-veronichka", veronichkaCounter);
+    });
+
+    loadCounterFromFirebase("nazao", function(value) {
+      nazaoCounter = value;
+      updateCounter("counter-nazao", nazaoCounter);
+    });
+
+    // Обробники подій для кнопок
     document.getElementById("increase-veronichka").addEventListener("click", function() {
       veronichkaCounter += 2;
       updateCounter("counter-veronichka", veronichkaCounter);
-      saveToLocalStorage("veronichkaCounter", veronichkaCounter); // Зберігаємо в LocalStorage
+      saveToFirebase("veronichka", veronichkaCounter); // Зберігаємо в Firebase
     });
 
-    // Обробник подій для кнопки Обнулити для Veronichka
     document.getElementById("reset-veronichka").addEventListener("click", function() {
       veronichkaCounter = 0;
       updateCounter("counter-veronichka", veronichkaCounter);
-      saveToLocalStorage("veronichkaCounter", veronichkaCounter); // Зберігаємо в LocalStorage
+      saveToFirebase("veronichka", veronichkaCounter); // Зберігаємо в Firebase
     });
 
-    // Обробник подій для кнопки +2 для Nazao
     document.getElementById("increase-nazao").addEventListener("click", function() {
       nazaoCounter += 2;
       updateCounter("counter-nazao", nazaoCounter);
-      saveToLocalStorage("nazaoCounter", nazaoCounter); // Зберігаємо в LocalStorage
+      saveToFirebase("nazao", nazaoCounter); // Зберігаємо в Firebase
     });
 
-    // Обробник подій для кнопки Обнулити для Nazao
     document.getElementById("reset-nazao").addEventListener("click", function() {
       nazaoCounter = 0;
       updateCounter("counter-nazao", nazaoCounter);
-      saveToLocalStorage("nazaoCounter", nazaoCounter); // Зберігаємо в LocalStorage
+      saveToFirebase("nazao", nazaoCounter); // Зберігаємо в Firebase
     });
-
-    // Початкове відображення значень
-    updateCounter("counter-veronichka", veronichkaCounter);
-    updateCounter("counter-nazao", nazaoCounter);
   </script>
 </body>
 </html>
