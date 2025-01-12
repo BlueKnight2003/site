@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Counter with Storage</title>
+  <style>
+    body {
+      background-color: black;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .name {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+    .counter {
+      margin-bottom: 20px;
+      font-size: 1.5rem;
+    }
+    .buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+    .button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: gray;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .button:hover {
+      background-color: white;
+      color: black;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <div class="name">Veronichka</div>
+    <div class="counter" id="counter-veronichka">0</div>
+    <div class="buttons">
+      <button class="button" id="increase-veronichka">+2</button>
+      <button class="button" id="reset-veronichka">Обнулити</button>
+    </div>
+  </div>
+  <div>
+    <div class="name">Nazao</div>
+    <div class="counter" id="counter-nazao">0</div>
+    <div class="buttons">
+      <button class="button" id="increase-nazao">+2</button>
+      <button class="button" id="reset-nazao">Обнулити</button>
+    </div>
+  </div>
+
+  <script>
+    // Завантажуємо значення з LocalStorage, або встановлюємо 0, якщо значення немає
+    let veronichkaCounter = parseInt(localStorage.getItem("veronichkaCounter")) || 0;
+    let nazaoCounter = parseInt(localStorage.getItem("nazaoCounter")) || 0;
+
+    // Оновлюємо відображення лічильника
+    function updateCounter(counterId, value) {
+      document.getElementById(counterId).textContent = value;
+    }
+
+    // Зберігаємо значення в LocalStorage
+    function saveToLocalStorage(name, value) {
+      localStorage.setItem(name, value);
+    }
+
+    // Обробник подій для кнопки +2 для Veronichka
+    document.getElementById("increase-veronichka").addEventListener("click", function() {
+      veronichkaCounter += 2;
+      updateCounter("counter-veronichka", veronichkaCounter);
+      saveToLocalStorage("veronichkaCounter", veronichkaCounter); // Зберігаємо в LocalStorage
+    });
+
+    // Обробник подій для кнопки Обнулити для Veronichka
+    document.getElementById("reset-veronichka").addEventListener("click", function() {
+      veronichkaCounter = 0;
+      updateCounter("counter-veronichka", veronichkaCounter);
+      saveToLocalStorage("veronichkaCounter", veronichkaCounter); // Зберігаємо в LocalStorage
+    });
+
+    // Обробник подій для кнопки +2 для Nazao
+    document.getElementById("increase-nazao").addEventListener("click", function() {
+      nazaoCounter += 2;
+      updateCounter("counter-nazao", nazaoCounter);
+      saveToLocalStorage("nazaoCounter", nazaoCounter); // Зберігаємо в LocalStorage
+    });
+
+    // Обробник подій для кнопки Обнулити для Nazao
+    document.getElementById("reset-nazao").addEventListener("click", function() {
+      nazaoCounter = 0;
+      updateCounter("counter-nazao", nazaoCounter);
+      saveToLocalStorage("nazaoCounter", nazaoCounter); // Зберігаємо в LocalStorage
+    });
+
+    // Початкове відображення значень
+    updateCounter("counter-veronichka", veronichkaCounter);
+    updateCounter("counter-nazao", nazaoCounter);
+  </script>
+</body>
+</html>
